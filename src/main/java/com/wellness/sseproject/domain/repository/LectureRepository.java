@@ -14,14 +14,14 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
 
     @Query(value = "SELECT * FROM LECTURE_TB WHERE masking = 1 AND lecture_type = (:lectureType) AND start_time >= (:startTime) ORDER BY start_time LIMIT :startIndex, :pageCount", nativeQuery = true)
     List<Lecture> findLectureListByLectureTypeAndDate(@Param("lectureType") String lectureType,
-                                               @Param("startTime") String startTime,
-                                               @Param("startIndex") int startIndex,
-                                               @Param("pageCount") int pageCount);
+                                                      @Param("startTime") String startTime,
+                                                      @Param("startIndex") int startIndex,
+                                                      @Param("pageCount") int pageCount);
 
     @Query(value = "SELECT * FROM LECTURE_TB WHERE masking = 1 AND lecture_type = (:lectureType) ORDER BY start_time LIMIT :startIndex, :pageCount", nativeQuery = true)
     List<Lecture> findLectureListByLectureType(@Param("lectureType") String lectureType,
-                                                      @Param("startIndex") int startIndex,
-                                                      @Param("pageCount") int pageCount);
+                                               @Param("startIndex") int startIndex,
+                                               @Param("pageCount") int pageCount);
 
     @Query(value = "SELECT * FROM LECTURE_TB WHERE masking = 1 AND start_time >= (:startTime) ORDER BY start_time LIMIT :startIndex, :pageCount", nativeQuery = true)
     List<Lecture> findLectureByAllLectureTypeAndDate(@Param("startTime") String startTime,
@@ -30,17 +30,16 @@ public interface LectureRepository extends JpaRepository<Lecture, Integer> {
 
     @Query(value = "SELECT * FROM LECTURE_TB WHERE masking = 1 ORDER BY start_time LIMIT :startIndex, :pageCount", nativeQuery = true)
     List<Lecture> findLectureByAllLectureType(@Param("startIndex") int startIndex,
-                                          @Param("pageCount") int pageCount);
+                                              @Param("pageCount") int pageCount);
 
 
-    @Query(value = "SELECT * FROM LECTURE_TB WHERE masking = 1 AND lecture_id in :lectureIdList ORDER BY lecture_id", nativeQuery = true)
+    @Query(value = "SELECT * FROM LECTURE_TB WHERE lecture_id in :lectureIdList ORDER BY lecture_id", nativeQuery = true)
     List<Lecture> getLecturesByLectureIds(@Param("lectureIdList") List<Integer> lectureIdList);
 
     Lecture findLectureByLectureIdAndMasking(int lectureId, boolean masking);
 
+    Lecture findLectureByLectureId(int lectureId);
+
     int countByLectureId(int lectureId);
-
-
-    //TODO 쿼리추가 userId로 Course 조회 후 해당 id 로 lecture 불러오는
 
 }

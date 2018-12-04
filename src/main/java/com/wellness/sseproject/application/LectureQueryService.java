@@ -137,4 +137,18 @@ public class LectureQueryService {
 
         return lectureDTO;
     }
+
+    public LectureDTO getLectureByIdIgnoreMasking(int lectureId){
+
+        Lecture lecture = lectureRepository.findLectureByLectureId(lectureId);
+        if (lecture == null) {
+            return null;
+        }
+        System.out.println(lectureId);
+        List<LectureImage> lectureImageList = lectureImageRepository.getLectureImagesByLectureId(lectureId);
+        LectureDTO lectureDTO = new LectureDTO(lecture);
+        lectureDTO.setLectureImageUrls(lectureImageList);
+
+        return lectureDTO;
+    }
 }

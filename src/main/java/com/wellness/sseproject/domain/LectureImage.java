@@ -22,7 +22,7 @@ public class LectureImage {
     @Column(name = "image_url")
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "lecture_id", nullable = false)
     @JsonIgnore
     private Lecture lecture;

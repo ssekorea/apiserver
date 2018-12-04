@@ -81,6 +81,9 @@ public class CourseQueryService {
             return null;
         }
         Lecture lecture = lectureRepository.findLectureByLectureIdAndMasking(course.getLectureId(), true);
+        if (lecture == null){
+            return new CourseLectureDTO(course);
+        }
         List<LectureImage> lectureImages = lectureImageRepository.getLectureImagesByLectureId(course.getLectureId());
 
         LectureDTO lectureDTO = new LectureDTO(lecture);
@@ -88,7 +91,28 @@ public class CourseQueryService {
         return new CourseLectureDTO(course, lectureDTO);
     }
 
+    public List<Course> getCourseListByPage(int startIndex, int count){
 
+        int startCount = count * startIndex;
+        System.out.println(startIndex);
+        System.out.println(count);
+
+        List<Course> courseList = courseRepository.getCourseListByPage(startCount, count);
+
+        if (courseList.size() == 0){
+            return null;
+        }
+
+        return courseList;
+    }
+
+    public Course getCourseById(int courseId){
+        return courseRepository.getCourseByCourseId(courseId);
+    }
+
+    public Course getCourseByUserIdAndCourseId(String userId, int courseId){
+        return courseRepository.getCourseByUserIdAndCourseId(userId, courseId);
+    }
 
 
 }

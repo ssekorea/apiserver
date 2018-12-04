@@ -29,14 +29,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
                 // Un-secure H2 Database
-                .antMatchers("/oauth/**").permitAll()
-                .antMatchers("/courses/**").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
-                .antMatchers("/orders/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/lectures/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/files/**").hasAnyRole("ADMIN")
-                .antMatchers("/boards/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers("/feeds/**").hasAnyRole("ADMIN", "USER")
-                .antMatchers(HttpMethod.POST,"/users").permitAll() // allow Register User
+//                .antMatchers("/oauth/**").permitAll()
+//                .antMatchers("/courses/**").hasAnyRole("ROLE_USER", "ROLE_ADMIN")
+//                .antMatchers("/orders/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/lectures/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/files/**").hasAnyRole("ADMIN")
+//                .antMatchers("/boards/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers("/feeds/**").hasAnyRole("ADMIN", "USER")
+//                .antMatchers(HttpMethod.POST,"/users").permitAll() // allow Register User
                 .anyRequest().permitAll();
                 //.anyRequest().hasAnyRole("ADMIN","USER").and();
 

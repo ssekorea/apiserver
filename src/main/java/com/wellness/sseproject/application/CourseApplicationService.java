@@ -1,6 +1,7 @@
 package com.wellness.sseproject.application;
 
 import com.wellness.sseproject.domain.Course;
+import com.wellness.sseproject.domain.Lecture;
 import com.wellness.sseproject.domain.repository.CourseRepository;
 import com.wellness.sseproject.domain.repository.LectureRepository;
 import com.wellness.sseproject.domain.repository.UserRepository;
@@ -26,23 +27,51 @@ public class CourseApplicationService{
     CourseRepository courseRepository;
 
     public boolean registerCourse(String userId, CourseRegisterDTO courseRegisterDTO) {
-
-        if (userRepository.countByUserId(userId) == 0 && lectureRepository.countByLectureId(courseRegisterDTO.getLectureId()) == 0){
+        Lecture lecture = lectureRepository.findLectureByLectureId(courseRegisterDTO.getLectureId());
+        if (courseRepository.getCourseByUserIdAndCourseId(userId, courseRegisterDTO.getLectureId()) != null){
             return false;
         }
-        // 선생, 학생 구별 로직 들어가야함
-        Course course = new Course(courseRegisterDTO.getLectureId(), userId,courseRegisterDTO.getAttendType());
-        Date today = new Date();
-        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
-        course.setRegisterDate(date.format(today.getTime()));
-        courseRepository.save(course);
-        return true;
+
+        if (courseRegisterDTO.getAttendType() == 0){
+            if (lecture.getMaxStudentNum() - lecture.getCurrentStudentNum() > 0){
+                lecture.setCurrentStudentNum(lecture.getCurrentStudentNum() + 1);
+                lectureRepository.saveAndFlush(lecture);
+
+                Course course = new Course(courseRegisterDTO.getLectureId(), userId,courseRegisterDTO.getAttendType());
+                Date today = new Date();
+                SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+                course.setRegisterDate(date.format(today.getTime()));
+                courseRepository.save(course);
+                return true;
+            }
+            return false;
+        }
+
+        if (lecture.getMaxTeacherNum() - lecture.getCurrentTeacherNum() > 0){
+            Course course = new Course(courseRegisterDTO.getLectureId(), userId,courseRegisterDTO.getAttendType());
+            lecture.setCurrentTeacherNum(lecture.getCurrentTeacherNum() + 1);
+            Date today = new Date();
+            SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd");
+            course.setRegisterDate(date.format(today.getTime()));
+            courseRepository.save(course);
+            return true;
+        }
+        return false;
 
     }
 
     public boolean deleteCourseByCourseId(int courseId) {
-        if (courseRepository.countCourseByCourseId(courseId) == 0){
+        Course course = courseRepository.getCourseByCourseId(courseId);
+        if (course == null){
             return false;
+        }
+        Lecture lecture = lectureRepository.findLectureByLectureId(course.getLectureId());
+        if (course.getAttendType() == 0){
+            lecture.setCurrentStudentNum(lecture.getCurrentStudentNum() - 1);
+            lectureRepository.saveAndFlush(lecture);
+        }else{
+            lecture.setCurrentTeacherNum(lecture.getCurrentTeacherNum() - 1);
+            lectureRepository.saveAndFlush(lecture);
         }
         courseRepository.deleteById(courseId);
         return true;

@@ -32,7 +32,7 @@ public class LectureController {
     @RequestMapping(value = "/{lectureId}", method = RequestMethod.GET)
     public ResponseEntity<ApiResponseMessage> getLectureById(@PathVariable int lectureId) {
 
-        LectureDTO lectureDTO = lectureQueryService.getLectureById(lectureId);
+        LectureDTO lectureDTO = lectureQueryService.getLectureByIdIgnoreMasking(lectureId);
         if (lectureDTO == null) {
             return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Invalid lecture Id", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }

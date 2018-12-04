@@ -15,6 +15,9 @@ public class CourseLectureDTO {
 
     LectureDTO lecture;
 
+    public CourseLectureDTO(Course course){
+        this.course = course;
+    }
 
     public CourseLectureDTO(Course course, Lecture lecture) {
         this.course = course;

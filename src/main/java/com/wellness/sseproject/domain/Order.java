@@ -33,6 +33,15 @@ public class Order {
     @Column(name = "order_date")
     String orderDate;
 
+    @Column(name = "recipient_name")
+    String recipientName;
+
+    @Column(name = "recipient_address")
+    String recipientAddress;
+
+    @Column(name = "recipient_phone_num")
+    String recipientPhoneNumber;
+
     @Column(name = "payment_info")
     int paymentInfo;
 
@@ -42,7 +51,7 @@ public class Order {
     @Column(name = "is_payment_confirm")
     boolean isPaymentConfirm;
 
-    public Order(OrderRegisterDTO orderRegisterDTO){
+    public Order(OrderRegisterDTO orderRegisterDTO) {
         this.userId = orderRegisterDTO.getUserId();
         this.productId = orderRegisterDTO.getProductId();
         this.orderNum = orderRegisterDTO.getOrderNum();
@@ -50,6 +59,9 @@ public class Order {
         this.orderDate = orderRegisterDTO.getOrderDate();
         this.paymentInfo = orderRegisterDTO.getPaymentInfo();
         this.isPaymentConfirm = orderRegisterDTO.isPaymentConfirm();
+        this.recipientName = orderRegisterDTO.getRecipientName();
+        this.recipientAddress = orderRegisterDTO.getRecipientAddress();
+        this.recipientPhoneNumber = orderRegisterDTO.getRecipientPhoneNumber();
     }
 
 }

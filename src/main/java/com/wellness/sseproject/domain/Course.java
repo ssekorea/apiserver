@@ -27,13 +27,13 @@ public class Course {
     @Column(name = "completion_flag")
     int completionFlag;
     @Column(name = "attend_type")
-    String attendType;
+    int attendType;
     @Column(name = "payment_info")
     int paymentInfo;
     @Column(name = "is_payment_confirm")
     boolean isPaymentConfirm;
 
-    public Course(int lectureId, String userId, String attendType) {
+    public Course(int lectureId, String userId, int attendType) {
         this.lectureId = lectureId;
         this.userId = userId;
         this.attendType = attendType;

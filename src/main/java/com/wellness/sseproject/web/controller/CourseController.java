@@ -5,14 +5,13 @@ import com.wellness.sseproject.application.CourseQueryService;
 import com.wellness.sseproject.domain.Course;
 import com.wellness.sseproject.web.controller.dto.CourseLectureDTO;
 import com.wellness.sseproject.web.controller.dto.CourseModifyDTO;
-import com.wellness.sseproject.web.controller.message.ApiResponseMessage;
-import com.wellness.sseproject.web.controller.message.CourseLectureResponseMessage;
-import com.wellness.sseproject.web.controller.message.CourseResponseMessage;
-import com.wellness.sseproject.web.controller.message.ErrorResponseMessageFactory;
+import com.wellness.sseproject.web.controller.message.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -33,6 +32,17 @@ public class CourseController {
             return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Invalid courseId", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
         ApiResponseMessage apiResponseMessage = new CourseLectureResponseMessage(courseLectureDTO);
+        return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity getCourseListByPage(@RequestParam(defaultValue = "0") int startIndex, @RequestParam(defaultValue = "30") int count){
+        List<Course> courseList = courseQueryService.getCourseListByPage(startIndex, count);
+
+        if (courseList == null){
+            return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("There is NO page", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        }
+        ApiResponseMessage apiResponseMessage = new CourseListResponseMessage(courseList);
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
     }
 

@@ -7,5 +7,5 @@ import lombok.Data;
 public class CourseRegisterDTO {
 
     int lectureId;
-    String attendType;
+    int attendType;
 }

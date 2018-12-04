@@ -19,14 +19,13 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     Course getCourseByCourseId(int courseId);
 
+    Course getCourseByUserIdAndLectureId(String userId, int lectureId);
+
     List<Course> getCourseByUserIdOrderByLectureId(String userId);
 
     Course getCourseByUserIdAndCourseId(String userId, int courseId);
 
-
-    @Query(value = "SELECT * FROM LECTURE_TB WHERE start_time >= (:startTime) ORDER BY start_time LIMIT :startIndex, :pageCount", nativeQuery = true)
-    List<Lecture> findLectureByAllLectureType(@Param("startTime") String startTime,
-                                              @Param("startIndex") int startIndex,
-                                              @Param("pageCount") int pageCount);
+    @Query(value = "SELECT * FROM COURSE_TB ORDER BY course_id LIMIT :startCount, :pageCount", nativeQuery = true)
+    List<Course> getCourseListByPage(@Param("startCount") int startCount, @Param("pageCount") int pageCount);
 
 }

@@ -1,9 +1,7 @@
 package com.wellness.sseproject.web.controller;
 
 import com.wellness.sseproject.application.*;
-import com.wellness.sseproject.domain.Order;
-import com.wellness.sseproject.domain.QuestionBoard;
-import com.wellness.sseproject.domain.User;
+import com.wellness.sseproject.domain.*;
 import com.wellness.sseproject.util.JwtTokenUtil;
 import com.wellness.sseproject.web.controller.dto.*;
 import com.wellness.sseproject.web.controller.message.*;
@@ -45,6 +43,12 @@ public class UserController {
 
     @Autowired
     QuestionBoardQueryService questionBoardQueryService;
+
+    @Autowired
+    ProductQueryService productQueryService;
+
+    @Autowired
+    ProductApplicationService productApplicationService;
 
     @Autowired
     JwtTokenUtil jwtTokenUtil;
@@ -151,13 +155,29 @@ public class UserController {
                                                                  @RequestBody CourseRegisterDTO courseRegisterDTO) {
 
         if (!courseApplicationService.registerCourse(userId, courseRegisterDTO)){
-            ApiResponseMessage errorResponseMessage = new ErrorResponseMessage();
-            errorResponseMessage.setStatusCode(HttpStatus.BAD_REQUEST.toString());
-            return new ResponseEntity<>(errorResponseMessage, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Course is already full Or User is already course this lecture", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
         ApiResponseMessage apiResponseMessage = new ApiResponseMessage();
         apiResponseMessage.setHttpStatusCodeOK();
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{userId}/courses/{courseId}", method = RequestMethod.DELETE)
+    public ResponseEntity<ApiResponseMessage> deleteUserCourse(@PathVariable String userId, @PathVariable int courseId) {
+        Course course = courseQueryService.getCourseByUserIdAndCourseId(userId, courseId);
+        if (course == null){
+            return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("there is no course", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        }
+
+        if (!userId.equals(course.getUserId())){
+            return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("You don't have access", HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
+        }
+
+        courseApplicationService.deleteCourseByCourseId(courseId);
+        ApiResponseMessage apiResponseMessage = new ApiResponseMessage();
+        apiResponseMessage.setHttpStatusCodeOK();
+        return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
+
     }
 
     @RequestMapping(value = "/{userId}/orders", method = RequestMethod.GET)
@@ -174,6 +194,10 @@ public class UserController {
     @RequestMapping(value = "/{userId}/orders", method = RequestMethod.POST)
     public ResponseEntity<ApiResponseMessage> registerUserOrder(@PathVariable String userId, @RequestBody OrderRegisterDTO orderRegisterDTO){
         orderRegisterDTO.setUserId(userId);
+        //재고 검사
+        if (!productQueryService.isStockAvailable(orderRegisterDTO.getProductId(), orderRegisterDTO.getOrderNum())){
+            return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("There is No stock", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        }
         Order order = orderApplicationService.registerOrder(orderRegisterDTO);
         ApiResponseMessage apiResponseMessage = new OrderResponseMessage(order);
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);

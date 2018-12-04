@@ -6,14 +6,13 @@ import com.wellness.sseproject.web.controller.message.FilePathResponseMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.FileCopyUtils;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 @CrossOrigin(origins = "*")
@@ -28,45 +27,43 @@ public class FileUploadController {
     @Value("${server.port}")
     String portNum;
 
+    String tomcatPathName = "work/Tomcat/localhost/ROOT/public";
+
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<ApiResponseMessage> uploadFiles(@RequestParam("name") String name,
-                                                          @RequestParam("file") MultipartFile file){
-
-        System.out.println(name);
-        if (name.contains("/")) {
+                                                          @RequestParam("file") MultipartFile file) {
+        try{
+            System.out.println(new String(file.getOriginalFilename().getBytes("8859_1"), "UTF-8"));
+        }catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (name.contains("/")){
             return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Relative pathnames not allowed", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
 
         if (!file.isEmpty()) {
             try {
 
-                String pathName = "/images/" + UUID.randomUUID() + "/";
-                File dirFile = new File(baseDir + pathName);
-                if(!dirFile.exists()){
-                    //디렉토리 생성 메서드
-                    dirFile.mkdirs();
-                    System.out.println("created directory successfully!");
-                }
-                File writeFile = new File(baseDir + pathName + name);
+                String etx = name.substring(name.lastIndexOf('.'));
 
-                BufferedOutputStream stream = new BufferedOutputStream(
-                        new FileOutputStream(writeFile));
-                FileCopyUtils.copy(file.getInputStream(), stream);
-                stream.close();
-                System.out.println("You successfully uploaded");
+                String saveFileName = UUID.randomUUID() + etx;
 
-                String imageUrl = "http://" + domainAddress + ":" + portNum + pathName;
+                File serverFile = new File(baseDir + File.separator + saveFileName);
+                file.transferTo(serverFile);
+
+                String imageUrl = "http://" + domainAddress + ":" + portNum + File.separator + tomcatPathName + File.separator + saveFileName;
+                System.out.println(imageUrl);
+
 
                 ApiResponseMessage apiResponseMessage = new FilePathResponseMessage(imageUrl);
 
                 return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
-            }
-            catch (Exception e) {
+
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("message You Failed to upload");
             }
-        }
-        else {
+        } else {
             System.out.println("You Failed to upload because it is empty");
         }
         return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Relative pathnames not allowed", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);

@@ -16,11 +16,9 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.transaction.Transactional;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,7 +44,7 @@ public class ProductController {
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET)
     public ResponseEntity<ApiResponseMessage> getProductById(@PathVariable int productId) {
 
-        ProductDTO productDTO = productQueryService.getProductById(productId);
+        ProductDTO productDTO = productQueryService.getProductDTOById(productId);
         if (productDTO == null) {
             return new ResponseEntity<>(ErrorResponseMessageFactory.
                     createErrorResponseMessageFactory("Invalid product Id", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
@@ -72,15 +70,8 @@ public class ProductController {
     //Test Completion
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<ApiResponseMessage> registerProduct(@RequestBody ProductRegisterDTO productRegisterDTO, @RequestParam("file")MultipartFile[] files) {
+    public ResponseEntity<ApiResponseMessage> registerProduct(@RequestBody ProductRegisterDTO productRegisterDTO) {
 
-        List<String> imageFileUrls = new ArrayList<>();
-        for (int i = 0; i < files.length; i++){
-            if (this.imageFileUpload(files[i]) != null){
-                imageFileUrls.add(this.imageFileUpload(files[i]));
-            }
-        }
-        productRegisterDTO.setProductImageUrls(imageFileUrls);
         ProductDTO productDTO = productApplicationService.registerProduct(productRegisterDTO);
         ApiResponseMessage apiResponseMessage = new ProductResponseMessage(productDTO);
         return new ResponseEntity<>(apiResponseMessage, HttpStatus.OK);
@@ -91,7 +82,7 @@ public class ProductController {
     @RequestMapping(value = "/{productId}", method = RequestMethod.DELETE)
     public ResponseEntity<ApiResponseMessage> deleteProduct(@PathVariable int productId) {
 
-        if (productQueryService.getProductById(productId) == null) {
+        if (productQueryService.getProductDTOById(productId) == null) {
             return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Invalid lecture Id", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
 
@@ -106,7 +97,7 @@ public class ProductController {
     @RequestMapping(value = "/{productId}", method = RequestMethod.PUT)
     public ResponseEntity<ApiResponseMessage> modifyProduct(@PathVariable int productId, @RequestBody ProductDTO productDTO) {
 
-        if (productQueryService.getProductById(productId) == null) {
+        if (productQueryService.getProductDTOById(productId) == null) {
             return new ResponseEntity<>(ErrorResponseMessageFactory.createErrorResponseMessageFactory("Invalid productId Id", HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
         productDTO.setProductId(productId);

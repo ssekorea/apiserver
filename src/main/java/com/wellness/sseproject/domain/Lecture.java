@@ -32,14 +32,19 @@ public class Lecture {
     private String placeAddress2;
     @Column(name = "place_address3")
     private String placeAddress3;
-    @Column(name = "max_student_num")
-    private int maxStudentNum;
     @Column(name = "explanation")
     private String explanation;
     @Column(name = "lecture_type")
     private String lectureType;
     @Column(name = "max_teacher_num")
     private int maxTeacherNum;
+    @Column(name = "max_student_num")
+    private int maxStudentNum;
+
+    @Column(name = "current_student_num")
+    private int currentStudentNum;
+    @Column(name = "current_teacher_num")
+    private int currentTeacherNum;
 
     @Column(name = "masking")
     private boolean masking;
@@ -47,6 +52,9 @@ public class Lecture {
 //    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JoinColumn(name="lecture_id", referencedColumnName = "lecture_id")
 //    private List<LectureImage> lectureImages;
+    public Lecture(){
+
+    }
 
     public Lecture(LectureDTO lectureDTO){
         this.title = lectureDTO.getTitle();
@@ -80,12 +88,7 @@ public class Lecture {
         this.lectureType = lectureModifyDTO.getLectureType();
         this.explanation = lectureModifyDTO.getExplanation();
         this.masking = true;
-        /*lectureImages = new ArrayList<>();
-        for (String lectureImageUrl : lectureModifyDTO.getLectureImageUrls()){
-            LectureImage tempLectureImage = new LectureImage(lectureImageUrl);
-            tempLectureImage.setLecture(this);
-            lectureImages.add(tempLectureImage);
-        }*/
+
     }
 
     public Lecture(LectureRegisterDTO lectureRegisterDTO){
@@ -99,6 +102,6 @@ public class Lecture {
         this.maxTeacherNum = lectureRegisterDTO.getMaxTeacherNum();
         this.lectureType = lectureRegisterDTO.getLectureType();
         this.explanation = lectureRegisterDTO.getExplanation();
-
+        this.masking = true;
     }
 }

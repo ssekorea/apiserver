@@ -21,10 +21,10 @@ public class ProductQueryService {
     ProductImageRepository productImageRepository;
 
 
-    public ProductDTO getProductById(int productId) {
+    public ProductDTO getProductDTOById(int productId) {
 
         Product product = productRepository.findByProductIdAndMasking(productId, true);
-        if (product == null){
+        if (product == null) {
             return null;
         }
         List<ProductImage> productImageList = productImageRepository.getProductImagesByProduct(productId);
@@ -34,13 +34,17 @@ public class ProductQueryService {
         return productDTO;
     }
 
+    public Product getProductById(int productId) {
+        return productRepository.findByProductId(productId);
+    }
+
 
     public List<ProductDTO> getProductListByPage(int startIndex, int count) {
         int startCount = count * startIndex;
 
         List<Product> productList = productRepository.findProductListByPage(startCount, count, true);
 
-        if (productList.size() == 0){
+        if (productList.size() == 0) {
             return null;
         }
         List<Integer> productIdList = new ArrayList<>();
@@ -55,7 +59,7 @@ public class ProductQueryService {
 
         for (ProductDTO productDTO : productDTOList) {
             for (ProductImage productImage : productImageList) {
-                if (productImage.getProduct().getProductId() == productDTO.getProductId()){
+                if (productImage.getProduct().getProductId() == productDTO.getProductId()) {
                     productDTO.getProductImageUrls().add(productImage.getImageUrl());
                 }
             }
@@ -66,12 +70,12 @@ public class ProductQueryService {
 
     public List<ProductImageDTO> getProductImageDTOListByProductId(int productId) {
         Product product = productRepository.findByProductIdAndMasking(productId, true);
-        if (product == null){
+        if (product == null) {
             return null;
         }
         List<ProductImage> productImageList = productImageRepository.getProductImagesByProduct(productId);
 
-        if (productImageList.size() == 0){
+        if (productImageList.size() == 0) {
             return null;
         }
         List<ProductImageDTO> productImageDTOList = new ArrayList<>();
@@ -79,6 +83,11 @@ public class ProductQueryService {
             productImageDTOList.add(new ProductImageDTO(productImage));
         }
         return productImageDTOList;
+    }
+
+    public boolean isStockAvailable(int productId, int orderNum){
+        Product product = productRepository.findByProductId(productId);
+        return product.getStock() >= orderNum;
     }
 
 }

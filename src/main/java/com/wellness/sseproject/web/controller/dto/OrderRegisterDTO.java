@@ -18,6 +18,10 @@ public class OrderRegisterDTO {
     private String orderDate;
     private int paymentInfo;
 
+    String recipientName;
+    String recipientAddress;
+    String recipientPhoneNumber;
+
     @JsonIgnore
     private boolean isPaymentConfirm = false;
 }

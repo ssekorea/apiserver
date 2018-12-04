@@ -12,7 +12,7 @@ public class CourseModifyDTO {
     int courseId;
     int attendFlag;
     int completionFlag;
-    String attendType;
+    int attendType;
     int paymentInfo;
     boolean isPaymentConfirm;
 }
